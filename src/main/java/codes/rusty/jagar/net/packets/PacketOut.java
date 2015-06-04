@@ -8,7 +8,7 @@ import org.java_websocket.WebSocket;
 
 public abstract class PacketOut extends Packet {
     
-    public void write(WebSocket socket) {
+    public void write(WebSocket... sockets) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         LittleEndianDataOutputStream output = new LittleEndianDataOutputStream(bytes);
         try {
@@ -16,7 +16,13 @@ public abstract class PacketOut extends Packet {
             output.write(packetId);
             write(output);
             byte[] byteArray = bytes.toByteArray();
-            socket.send(byteArray);
+            for (WebSocket socket : sockets) {
+                try {
+                    socket.send(byteArray);
+                } catch (Exception e) {
+                    
+                }
+            }
             output.close();
         } catch (Exception e) {
             e.printStackTrace();

@@ -83,37 +83,37 @@ public class ServerHandler extends WebSocketServer implements Handler {
                         return;
                     }
 
-                    Core.getServer().queueAction(() -> player.onPacketInSetNickname(new PacketInSetNickname(name)));
+                    Core.getServer().queuePacket(() -> player.onPacketInSetNickname(new PacketInSetNickname(name)));
                     break;
 
                 case SPECTATE:
-                    Core.getServer().queueAction(() -> player.onPacketInSpectate(new PacketInSpectate()));
+                    Core.getServer().queuePacket(() -> player.onPacketInSpectate(new PacketInSpectate()));
                     break;
 
                 case MOUSE_MOVE:
                     double x = data.readDouble();
                     double y = data.readDouble();
-                    Core.getServer().queueAction(() -> player.onPacketInMouseMove(new PacketInMouseMove(x, y)));
+                    Core.getServer().queuePacket(() -> player.onPacketInMouseMove(new PacketInMouseMove(x, y)));
                     break;
 
                 case SPLIT:
-                    Core.getServer().queueAction(() -> player.onPacketInSplit(new PacketInSplit()));
+                    Core.getServer().queuePacket(() -> player.onPacketInSplit(new PacketInSplit()));
                     break;
 
                 case Q_PRESSED:
-                    Core.getServer().queueAction(() -> player.onPacketInQPressed(new PacketInQPressed()));
+                    Core.getServer().queuePacket(() -> player.onPacketInQPressed(new PacketInQPressed()));
                     break;
 
                 case Q_RELEASED:
-                    Core.getServer().queueAction(() -> player.onPacketInQReleased(new PacketInQReleased()));
+                    Core.getServer().queuePacket(() -> player.onPacketInQReleased(new PacketInQReleased()));
                     break;
 
                 case EJECT_MASS:
-                    Core.getServer().queueAction(() -> player.onPacketInEjectMass(new PacketInEjectMass()));
+                    Core.getServer().queuePacket(() -> player.onPacketInEjectMass(new PacketInEjectMass()));
                     break;
 
                 case RESET:
-                    Core.getServer().queueAction(() -> player.onPacketInReset(new PacketInReset()));
+                    Core.getServer().queuePacket(() -> player.onPacketInReset(new PacketInReset()));
                     break;
 
                 default:

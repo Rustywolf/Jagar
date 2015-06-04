@@ -1,13 +1,15 @@
 package codes.rusty.jagar;
 
 import codes.rusty.jagar.game.GameHandler;
-import codes.rusty.jagar.game.Mechanics;
 import codes.rusty.jagar.net.ServerHandler;
+import codes.rusty.jagar.nodes.Node;
 import codes.rusty.jagar.nodes.NodeHandler;
 import codes.rusty.jagar.players.PlayerHandler;
-import java.util.ArrayList;
+import com.google.common.collect.Table;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Server extends TimerTask implements Handler {
     
@@ -17,7 +19,7 @@ public class Server extends TimerTask implements Handler {
     private GameHandler gameHandler;
     
     private final Timer timer;
-    private final ArrayList<Runnable> queuedActions;
+    private final ConcurrentLinkedQueue<Runnable> queuedPackets;
     
     public Server() {
         try {
@@ -32,7 +34,7 @@ public class Server extends TimerTask implements Handler {
         this.playerHandler = new PlayerHandler();
         
         timer = new Timer();
-        queuedActions = new ArrayList<>();
+        queuedPackets = new ConcurrentLinkedQueue<>();
     }
     
     public void start() {
@@ -42,19 +44,26 @@ public class Server extends TimerTask implements Handler {
 
     @Override
     public void run() {
-        queuedActions.stream().forEach((runnable) -> {
+        queuedPackets.stream().forEach((runnable) -> {
             runnable.run();
         });
-        queuedActions.clear();
-        nodeHandler.updateNodes();
+        queuedPackets.clear();
+        
+        playerHandler.tickPlayers();
+        nodeHandler.tickNodes();
+        gameHandler.tickGame();
+        
+        Table<Integer, Integer, Set<Node>> chunks = nodeHandler.getNodeChunkMap();
+        nodeHandler.render(chunks);
+        gameHandler.render(chunks);
     }
     
-    public void queueAction(Runnable runnable) {
+    public void queuePacket(Runnable runnable) {
         if (runnable == null) {
             throw new IllegalArgumentException("Runnable cannot be null!");
         }
         
-        this.queuedActions.add(runnable);
+        this.queuedPackets.add(runnable);
     }
 
     public ServerHandler getServerHandler() {

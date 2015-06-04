@@ -12,25 +12,27 @@ import codes.rusty.jagar.net.packets.in.PacketInReset;
 import codes.rusty.jagar.net.packets.in.PacketInSetNickname;
 import codes.rusty.jagar.net.packets.in.PacketInSpectate;
 import codes.rusty.jagar.net.packets.in.PacketInSplit;
+import codes.rusty.jagar.net.packets.out.PacketOutAddNode;
 import codes.rusty.jagar.net.packets.out.PacketOutSetBorder;
 import codes.rusty.jagar.nodes.PlayerNode;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import org.java_websocket.WebSocket;
 
 public class Player implements PacketReceiver {
-    
+
     private final int playerId;
     private final WebSocket socket;
     private final ArrayList<PlayerNode> nodes;
-    
+
     private String nickName;
     private Color color;
     private double mouseX = 0;
     private double mouseY = 0;
     private boolean spectating = false;
-    
+
     public Player(int id, WebSocket socket) {
         this.playerId = id;
         this.socket = socket;
@@ -84,17 +86,19 @@ public class Player implements PacketReceiver {
     public void setSpectating(boolean spectating) {
         this.spectating = spectating;
     }
-    
+
     public void addNode(PlayerNode node) {
         if (!node.getOwner().equals(this)) {
             throw new IllegalArgumentException("Cannot add node of another player!");
         }
-        
+
         node.setNickName(nickName);
         node.setColor(color);
         nodes.add(node);
+
+        new PacketOutAddNode(node.getId()).write(socket);
     }
-    
+
     public void destroyNode(PlayerNode node) {
         if (nodes.contains(node)) {
             nodes.remove(node);
@@ -103,15 +107,23 @@ public class Player implements PacketReceiver {
             }
         }
     }
-    
+
     public void tick() {
-        Core.getGame().getMechanics().onTick(this);
+        Vector2D mouse = new Vector2D(mouseX, mouseY);
+        for (PlayerNode node : this.nodes) {
+            Vector2D origin = new Vector2D(node.getX(), node.getY());
+            Vector2D normalize = mouse.subtract(origin).normalize();
+            Vector2D movement = normalize.scalarMultiply(node.getSpeed());
+            
+            node.setX((float) (node.getX() + movement.getX()));
+            node.setY((float) (node.getY() + movement.getY()));
+        }
     }
-    
+
     public List<PlayerNode> getNodes() {
         return new ArrayList<>(nodes);
     }
-    
+
     @Override
     public void onPacketInSetNickname(PacketInSetNickname packet) {
         this.setNickName(packet.getName());
@@ -131,36 +143,35 @@ public class Player implements PacketReceiver {
 
     @Override
     public void onPacketInSplit(PacketInSplit packet) {
-        
+
     }
 
     @Override
     public void onPacketInQPressed(PacketInQPressed packet) {
-        
+
     }
 
     @Override
     public void onPacketInQReleased(PacketInQReleased packet) {
-        
+
     }
 
     @Override
     public void onPacketInEjectMass(PacketInEjectMass packet) {
-        
+
     }
 
     @Override
     public void onPacketInReset(PacketInReset packet) {
         if (this.nodes.isEmpty()) {
             PlayerNode node = Core.getServer().getNodeHandler().newPlayerNode(this);
-            node.setSize(100);
+            node.setMass(100);
             node.setX(100.0f);
             node.setY(100.0f);
         }
-        
+
         PacketOut packetOut = new PacketOutSetBorder(Border.DEFAULT);
         packetOut.write(socket);
     }
-    
-    
+
 }

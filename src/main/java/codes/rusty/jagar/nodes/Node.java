@@ -10,11 +10,12 @@ public abstract class Node {
     private String nickName = "Unnamed";
     private float x = 0;
     private float y = 0;
-    private float velX = 20;
-    private float velY = 20;
+    private float velX = 0;//(float) Math.random() * 20f;
+    private float velY = 0;//(float) Math.random() * 20f;
     private Color color = new Color(0, 0, 0);
-    private float size = 1;
+    private float mass = 1;
     
+    private float speed = 10f;
     private boolean destroyed = false;
     private int killerId = -1;
     
@@ -79,15 +80,27 @@ public abstract class Node {
     }
 
     public float getSize() {
-        return size;
+        return (mass*mass)/100;
+    }
+    
+    public float getMass() {
+        return mass;
     }
 
-    public void setSize(float size) {
-        this.size = size;
+    public void setMass(float mass) {
+        this.mass = mass;
     }
     
     public int getFlags() {
         return 0b0;
+    }
+
+    public float getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(float speed) {
+        this.speed = speed;
     }
     
     public boolean isDestroyed() {

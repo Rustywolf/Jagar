@@ -2,7 +2,6 @@ package codes.rusty.jagar.players;
 
 import codes.rusty.jagar.Handler;
 import codes.rusty.jagar.net.packets.PacketOut;
-import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import org.java_websocket.WebSocket;
@@ -42,16 +41,14 @@ public class PlayerHandler implements Handler {
         }
     }
     
-    public void updatePlayers() {
+    public void tickPlayers() {
         byId.values().stream().forEach((Player player) -> {
             player.tick();
         });
     }
     
     public void sendToAll(PacketOut packet) {
-        byId.values().stream().forEach((player) -> {
-            packet.write(player.getSocket());
-        });
+        packet.write(byId.values().stream().map(player -> player.getSocket()).toArray(WebSocket[]::new));
     }
 
     @Override

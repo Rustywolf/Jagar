@@ -6,43 +6,53 @@ import codes.rusty.jagar.util.StringUtil;
 import com.google.common.io.LittleEndianDataOutputStream;
 import java.awt.Color;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 public class PacketOutUpdateNodes extends PacketOut {
 
+    private final Removed[] consumedData;
     private final Removed[] removedData;
     private final NodeData[] activeData;
     
     public PacketOutUpdateNodes(Collection<Node> active, Map<Integer, Integer> removed) {
         this.activeData = new NodeData[active.size()];
-        this.removedData = new Removed[removed.size()];
         
         int index = 0;
         for (Node node : active) {
-            activeData[index++] = new NodeData(node.getId(), node.getX(), node.getY(), node.getSize(), node.getColor(), node.getFlags(), node.getNickName());
+            activeData[index++] = new NodeData(node.getId(), node.getX(), node.getY(), node.getMass(), node.getColor(), node.getFlags(), node.getNickName());
         }
         
-        index = 0;
+        List<Removed> consumedNodes = new ArrayList<>();
+        List<Removed> removedNodes = new ArrayList<>();
         for (Entry<Integer, Integer> entry : removed.entrySet()) {
-            removedData[index++] = new Removed(entry.getKey(), entry.getValue());
+            if (entry.getValue() != -1) {
+                consumedNodes.add(new Removed(entry.getKey(), entry.getValue()));
+            } else {
+                removedNodes.add(new Removed(entry.getKey(), entry.getValue()));
+            }
         }
+        
+        this.consumedData = consumedNodes.toArray(new Removed[consumedNodes.size()]);
+        this.removedData = removedNodes.toArray(new Removed[removedNodes.size()]);
     }
     
     @Override
     protected void write(LittleEndianDataOutputStream output) throws IOException {
-        output.writeShort(removedData.length & 0xFFFF);
-        for (Removed removed : removedData) {
-            output.writeInt((int) (((long) removed.killerId) & 0xFFFFFFFF));
-            output.writeInt((int) (((long) removed.nodeId) & 0xFFFFFFFF));
+        output.writeShort(consumedData.length & 0xFFFF);
+        for (Removed consumed : consumedData) {
+            output.writeInt((int) (((long) consumed.killerId) & 0xFFFFFFFF));
+            output.writeInt((int) (((long) consumed.nodeId) & 0xFFFFFFFF));
         }
         
         for (NodeData active : activeData) {
             output.writeInt((int) (((long) active.nodeId) & 0xFFFFFFFF));
-            output.writeFloat(active.x);
-            output.writeFloat(active.y);
-            output.writeFloat(active.size);
+            output.writeShort((short) active.x);
+            output.writeShort((short) active.y);
+            output.writeShort((short) active.size);
             output.write((byte) (active.color.getRed() & 0xFF));
             output.write((byte) (active.color.getGreen() & 0xFF));
             output.write((byte) (active.color.getBlue() & 0xFF));
@@ -52,10 +62,9 @@ public class PacketOutUpdateNodes extends PacketOut {
         }
         
         output.writeInt((int) (0));
-        output.writeShort((short) (0));
-        output.writeInt((int) (((long) activeData.length) & 0xFFFFFFFF));
-        for (NodeData active : activeData) {
-            output.writeInt((int) (((long) active.nodeId) & 0xFFFFFFFF));
+        output.writeInt((int) (((long) removedData.length) & 0xFFFFFFFF));
+        for (Removed removed : removedData) {
+            output.writeInt((int) (((long) removed.nodeId) & 0xFFFFFFFF));
         }
     }
     
