@@ -2,6 +2,8 @@ package codes.rusty.jagar;
 
 import codes.rusty.jagar.game.GameHandler;
 import codes.rusty.jagar.logging.CoreLoggingHandler;
+import codes.rusty.jagar.nodes.NodeHandler;
+import codes.rusty.jagar.players.PlayerHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -31,6 +33,14 @@ public class Core {
     
     public static GameHandler getGame() {
         return Core.server.getGameHandler();
+    }
+    
+    public static PlayerHandler getPlayerHandler() {
+        return Core.server.getPlayerHandler();
+    }
+    
+    public static NodeHandler getNodeHandler() {
+        return Core.server.getNodeHandler();
     }
     
     public static Logger getLogger() {

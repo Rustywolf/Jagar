@@ -2,6 +2,9 @@ package codes.rusty.jagar.players;
 
 import codes.rusty.jagar.Handler;
 import codes.rusty.jagar.net.packets.PacketOut;
+import codes.rusty.jagar.nodes.Node;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import org.java_websocket.WebSocket;
@@ -31,6 +34,10 @@ public class PlayerHandler implements Handler {
     
     public Player getPlayer(int id) {
         return byId.get(id);
+    }
+    
+    public List<Player> getPlayers() {
+        return new ArrayList<>(byId.values());
     }
     
     protected void removePlayer(Player player) {

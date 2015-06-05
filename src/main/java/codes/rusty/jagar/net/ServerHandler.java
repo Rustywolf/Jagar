@@ -36,7 +36,7 @@ public class ServerHandler extends WebSocketServer implements Handler {
     @Override
     public void onOpen(WebSocket ws, ClientHandshake handshake) { 
         Core.getLogger().log(Level.INFO, "Connection to {0} created!", ws.getRemoteSocketAddress());
-        socketBindings.put(ws, Core.getServer().getPlayerHandler().newPlayer(ws));
+        socketBindings.put(ws, Core.getPlayerHandler().newPlayer(ws));
     }
 
     @Override

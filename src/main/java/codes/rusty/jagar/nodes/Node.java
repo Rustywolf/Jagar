@@ -2,17 +2,19 @@ package codes.rusty.jagar.nodes;
 
 import codes.rusty.jagar.Core;
 import java.awt.Color;
+import java.util.Random;
 
 public abstract class Node {
     
+    private static final Random RANDOM = new Random();
     private final int id;
     
-    private String nickName = "Unnamed";
+    private String nickName = "";
     private float x = 0;
     private float y = 0;
     private float velX = 0;//(float) Math.random() * 20f;
     private float velY = 0;//(float) Math.random() * 20f;
-    private Color color = new Color(0, 0, 0);
+    private Color color = new Color(RANDOM.nextInt(256), RANDOM.nextInt(256), RANDOM.nextInt(256));
     private float mass = 1;
     
     private float speed = 10f;
@@ -114,7 +116,7 @@ public abstract class Node {
     public void destroy(Node killer) {
         this.killerId = (killer == null) ? -1 : killer.id;
         this.destroyed = true;
-        Core.getServer().getNodeHandler().destroyNode(this);
+        Core.getNodeHandler().destroyNode(this);
     }
     
     public void tick() {

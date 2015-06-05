@@ -7,8 +7,10 @@ import codes.rusty.jagar.net.packets.out.PacketOutUpdateNodes;
 import codes.rusty.jagar.players.Player;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -29,15 +31,28 @@ public class NodeHandler implements Handler {
     }
     
     public PlayerNode newPlayerNode(Player player) {
-        int id = getFreeId();
+        int id = getNextFreeId();
         PlayerNode node = new PlayerNode(id, player);
-        byId.put(id, node);
         player.addNode(node);
+        addNode(node);
         
         return node;
     }
     
-    private int getFreeId() {
+    public MassNode newMassNode() {
+        int id = getNextFreeId();
+        MassNode node = new MassNode(id);
+        addNode(node);
+        
+        return node;
+    }
+    
+    private void addNode(Node node) {
+        byId.put(node.getId(), node);
+        Core.getGame().onNodeSpawned(node);
+    }
+    
+    private int getNextFreeId() {
         if (freeIds.isEmpty()) {
             return byId.size() + 1;
         } else {
@@ -47,6 +62,10 @@ public class NodeHandler implements Handler {
     
     public Node getNode(int id) {
         return byId.get(id);
+    }
+    
+    public List<Node> getNodes() {
+        return new ArrayList<>(byId.values());
     }
     
     protected void destroyNode(Node node) {
@@ -63,7 +82,7 @@ public class NodeHandler implements Handler {
     
     public void render(Table<Integer, Integer, Set<Node>> chunks) {
         PacketOut packet = new PacketOutUpdateNodes(byId.values(), removedQueue);
-        Core.getServer().getPlayerHandler().sendToAll(packet);
+        Core.getPlayerHandler().sendToAll(packet);
         removedQueue.clear();
     }
     

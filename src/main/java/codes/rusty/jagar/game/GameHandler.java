@@ -1,7 +1,7 @@
 package codes.rusty.jagar.game;
 
+import codes.rusty.jagar.Core;
 import codes.rusty.jagar.Handler;
-import codes.rusty.jagar.net.PacketReceiver;
 import codes.rusty.jagar.net.packets.in.PacketInEjectMass;
 import codes.rusty.jagar.net.packets.in.PacketInMouseMove;
 import codes.rusty.jagar.net.packets.in.PacketInQPressed;
@@ -10,6 +10,7 @@ import codes.rusty.jagar.net.packets.in.PacketInReset;
 import codes.rusty.jagar.net.packets.in.PacketInSetNickname;
 import codes.rusty.jagar.net.packets.in.PacketInSpectate;
 import codes.rusty.jagar.net.packets.in.PacketInSplit;
+import codes.rusty.jagar.net.packets.out.PacketOutSetBorder;
 import codes.rusty.jagar.nodes.Node;
 import codes.rusty.jagar.players.Player;
 import com.google.common.collect.Table;
@@ -17,42 +18,41 @@ import java.util.Set;
 
 public abstract class GameHandler implements Handler {
     
-    public abstract Mechanics getMechanics();
+    private Border border = Border.DEFAULT;
+    
+    public void enable() {
+        
+    }
     
     public abstract void tickGame();
     
     public abstract void render(Table<Integer, Integer, Set<Node>> chunks);
 
-    public boolean onPacketInSetNickname(Player player, PacketInSetNickname packet) {
-        return true;
+    public Border getBorder() {
+        return border;
     }
+    
+    public void setBorder(Border border) {
+        this.border = border;
+        Core.getPlayerHandler().sendToAll(new PacketOutSetBorder(border));
+    }
+    
+    public void onPacketInSetNickname(Player player, PacketInSetNickname packet) {}
 
-    public boolean onPacketInSpectate(Player player, PacketInSpectate packet) {
-        return true;
-    }
+    public void onPacketInSpectate(Player player, PacketInSpectate packet) {}
 
-    public boolean onPacketInMouseMove(Player player, PacketInMouseMove packet) {
-        return true;
-    }
+    public void onPacketInMouseMove(Player player, PacketInMouseMove packet) {}
 
-    public boolean onPacketInSplit(Player player, PacketInSplit packet) {
-        return true;
-    }
+    public void onPacketInSplit(Player player, PacketInSplit packet) {}
 
-    public boolean onPacketInQPressed(Player player, PacketInQPressed packet) {
-        return true;
-    }
+    public void onPacketInQPressed(Player player, PacketInQPressed packet) {}
 
-    public boolean onPacketInQReleased(Player player, PacketInQReleased packet) {
-        return true;
-    }
+    public void onPacketInQReleased(Player player, PacketInQReleased packet) {}
 
-    public boolean onPacketInEjectMass(Player player, PacketInEjectMass packet) {
-        return true;
-    }
+    public void onPacketInEjectMass(Player player, PacketInEjectMass packet) {}
 
-    public boolean onPacketInReset(Player player, PacketInReset packet) {
-        return true;
-    }
+    public void onPacketInReset(Player player, PacketInReset packet) {}
+    
+    public void onNodeSpawned(Node node) {}
     
 }

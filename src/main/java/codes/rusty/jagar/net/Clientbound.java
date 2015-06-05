@@ -2,15 +2,21 @@ package codes.rusty.jagar.net;
 
 import codes.rusty.jagar.net.packets.PacketOut;
 import codes.rusty.jagar.net.packets.out.PacketOutAddNode;
+import codes.rusty.jagar.net.packets.out.PacketOutClearNodes;
 import codes.rusty.jagar.net.packets.out.PacketOutSetBorder;
 import codes.rusty.jagar.net.packets.out.PacketOutUpdateClient;
+import codes.rusty.jagar.net.packets.out.PacketOutUpdateLeaderboardFFA;
+import codes.rusty.jagar.net.packets.out.PacketOutUpdateLeaderboardTeams;
 import codes.rusty.jagar.net.packets.out.PacketOutUpdateNodes;
 import java.util.HashMap;
 
 public enum Clientbound {
     UPDATE_NODES(16, PacketOutUpdateNodes.class),
     UPDATE_CLIENT(17, PacketOutUpdateClient.class),
+    CLEAR_NODES(20, PacketOutClearNodes.class),
     ADD_NODE(32, PacketOutAddNode.class),
+    UPDATE_FFA_LEADERBOARD(49, PacketOutUpdateLeaderboardFFA.class),
+    UPDATE_TEAM_LEADERBOARD(50, PacketOutUpdateLeaderboardTeams.class),
     SET_BORDER(64, PacketOutSetBorder.class);
         
     private static final HashMap<Integer, Clientbound> byId = new HashMap<>();

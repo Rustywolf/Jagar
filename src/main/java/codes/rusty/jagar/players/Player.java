@@ -1,9 +1,7 @@
 package codes.rusty.jagar.players;
 
 import codes.rusty.jagar.Core;
-import codes.rusty.jagar.game.Border;
 import codes.rusty.jagar.net.PacketReceiver;
-import codes.rusty.jagar.net.packets.PacketOut;
 import codes.rusty.jagar.net.packets.in.PacketInEjectMass;
 import codes.rusty.jagar.net.packets.in.PacketInMouseMove;
 import codes.rusty.jagar.net.packets.in.PacketInQPressed;
@@ -13,16 +11,17 @@ import codes.rusty.jagar.net.packets.in.PacketInSetNickname;
 import codes.rusty.jagar.net.packets.in.PacketInSpectate;
 import codes.rusty.jagar.net.packets.in.PacketInSplit;
 import codes.rusty.jagar.net.packets.out.PacketOutAddNode;
-import codes.rusty.jagar.net.packets.out.PacketOutSetBorder;
 import codes.rusty.jagar.nodes.PlayerNode;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
+import java.util.Random;
 import org.java_websocket.WebSocket;
 
 public class Player implements PacketReceiver {
 
+    private static final Random RANDOM = new Random();
+    
     private final int playerId;
     private final WebSocket socket;
     private final ArrayList<PlayerNode> nodes;
@@ -38,7 +37,7 @@ public class Player implements PacketReceiver {
         this.socket = socket;
         this.nodes = new ArrayList<>();
         this.nickName = "An unnamed cell";
-        this.color = new Color(0xFF, 0xFF, 0x00);
+        this.color = new Color(RANDOM.nextInt(256), RANDOM.nextInt(256), RANDOM.nextInt(256));
     }
 
     public int getPlayerId() {
@@ -74,9 +73,17 @@ public class Player implements PacketReceiver {
     public double getMouseX() {
         return mouseX;
     }
+    
+    public void setMouseX(double mouseX) {
+        this.mouseX = mouseX;
+    }
 
     public double getMouseY() {
         return mouseY;
+    }
+    
+    public void setMouseY(double mouseY) {
+        this.mouseY = mouseY;
     }
 
     public boolean isSpectating() {
@@ -109,15 +116,7 @@ public class Player implements PacketReceiver {
     }
 
     public void tick() {
-        Vector2D mouse = new Vector2D(mouseX, mouseY);
-        for (PlayerNode node : this.nodes) {
-            Vector2D origin = new Vector2D(node.getX(), node.getY());
-            Vector2D normalize = mouse.subtract(origin).normalize();
-            Vector2D movement = normalize.scalarMultiply(node.getSpeed());
-            
-            node.setX((float) (node.getX() + movement.getX()));
-            node.setY((float) (node.getY() + movement.getY()));
-        }
+        
     }
 
     public List<PlayerNode> getNodes() {
@@ -126,52 +125,42 @@ public class Player implements PacketReceiver {
 
     @Override
     public void onPacketInSetNickname(PacketInSetNickname packet) {
-        this.setNickName(packet.getName());
-        this.setSpectating(false); // I assume this is how it works?
+        Core.getGame().onPacketInSetNickname(this, packet);
     }
 
     @Override
     public void onPacketInSpectate(PacketInSpectate packet) {
-        this.setSpectating(true);
+        Core.getGame().onPacketInSpectate(this, packet);
     }
 
     @Override
     public void onPacketInMouseMove(PacketInMouseMove packet) {
-        this.mouseX = packet.getMouseX();
-        this.mouseY = packet.getMouseY();
+        Core.getGame().onPacketInMouseMove(this, packet);
     }
 
     @Override
     public void onPacketInSplit(PacketInSplit packet) {
-
+        Core.getGame().onPacketInSplit(this, packet);
     }
 
     @Override
     public void onPacketInQPressed(PacketInQPressed packet) {
-
+        Core.getGame().onPacketInQPressed(this, packet);
     }
 
     @Override
     public void onPacketInQReleased(PacketInQReleased packet) {
-
+        Core.getGame().onPacketInQReleased(this, packet);
     }
 
     @Override
     public void onPacketInEjectMass(PacketInEjectMass packet) {
-
+        Core.getGame().onPacketInEjectMass(this, packet);
     }
 
     @Override
     public void onPacketInReset(PacketInReset packet) {
-        if (this.nodes.isEmpty()) {
-            PlayerNode node = Core.getServer().getNodeHandler().newPlayerNode(this);
-            node.setMass(100);
-            node.setX(100.0f);
-            node.setY(100.0f);
-        }
-
-        PacketOut packetOut = new PacketOutSetBorder(Border.DEFAULT);
-        packetOut.write(socket);
+        Core.getGame().onPacketInReset(this, packet);
     }
 
 }

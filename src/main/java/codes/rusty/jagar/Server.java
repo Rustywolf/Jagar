@@ -1,6 +1,7 @@
 package codes.rusty.jagar;
 
 import codes.rusty.jagar.game.GameHandler;
+import codes.rusty.jagar.game.SnakeGameHandler;
 import codes.rusty.jagar.net.ServerHandler;
 import codes.rusty.jagar.nodes.Node;
 import codes.rusty.jagar.nodes.NodeHandler;
@@ -29,9 +30,9 @@ public class Server extends TimerTask implements Handler {
             throw new IllegalStateException("WebSocket server failed to initialize!");
         }
         
-        this.gameHandler = null; // Temp
         this.nodeHandler = new NodeHandler();
         this.playerHandler = new PlayerHandler();
+        this.gameHandler = new SnakeGameHandler();
         
         timer = new Timer();
         queuedPackets = new ConcurrentLinkedQueue<>();
@@ -40,6 +41,8 @@ public class Server extends TimerTask implements Handler {
     public void start() {
         serverHandler.start();
         timer.scheduleAtFixedRate(this, 50, 50);
+        
+        gameHandler.enable();
     }
 
     @Override
