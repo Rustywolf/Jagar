@@ -10,6 +10,7 @@ import codes.rusty.jagar.net.packets.in.PacketInReset;
 import codes.rusty.jagar.net.packets.in.PacketInSetNickname;
 import codes.rusty.jagar.net.packets.in.PacketInSpectate;
 import codes.rusty.jagar.net.packets.in.PacketInSplit;
+import codes.rusty.jagar.nodes.Node;
 import codes.rusty.jagar.nodes.PlayerNode;
 import codes.rusty.jagar.players.Player;
 import codes.rusty.jagar.util.StringUtil;
@@ -42,6 +43,12 @@ public class ServerHandler extends WebSocketServer implements Handler {
     @Override
     public void onClose(WebSocket ws, int code, String reason, boolean remote) { 
         Core.getLogger().info("Player Disconnected! " + reason);
+        Player disconnected = socketBindings.remove(ws);
+        if (disconnected != null) {
+            for (PlayerNode node : disconnected.getNodes().toArray(new PlayerNode[0])) {
+                disconnected.destroyNode(node);
+            }
+        }
     }
 
     @Override
@@ -83,37 +90,37 @@ public class ServerHandler extends WebSocketServer implements Handler {
                         return;
                     }
 
-                    Core.getServer().queuePacket(() -> player.onPacketInSetNickname(new PacketInSetNickname(name)));
+                    Core.getServer().queuePacket(() -> Core.getGame().onPacketInSetNickname(player, new PacketInSetNickname(name)));
                     break;
 
                 case SPECTATE:
-                    Core.getServer().queuePacket(() -> player.onPacketInSpectate(new PacketInSpectate()));
+                    Core.getServer().queuePacket(() -> Core.getGame().onPacketInSpectate(player, new PacketInSpectate()));
                     break;
 
                 case MOUSE_MOVE:
                     double x = data.readDouble();
                     double y = data.readDouble();
-                    Core.getServer().queuePacket(() -> player.onPacketInMouseMove(new PacketInMouseMove(x, y)));
+                    Core.getServer().queuePacket(() -> Core.getGame().onPacketInMouseMove(player, new PacketInMouseMove(x, y)));
                     break;
 
                 case SPLIT:
-                    Core.getServer().queuePacket(() -> player.onPacketInSplit(new PacketInSplit()));
+                    Core.getServer().queuePacket(() -> Core.getGame().onPacketInSplit(player, new PacketInSplit()));
                     break;
 
                 case Q_PRESSED:
-                    Core.getServer().queuePacket(() -> player.onPacketInQPressed(new PacketInQPressed()));
+                    Core.getServer().queuePacket(() -> Core.getGame().onPacketInQPressed(player, new PacketInQPressed()));
                     break;
 
                 case Q_RELEASED:
-                    Core.getServer().queuePacket(() -> player.onPacketInQReleased(new PacketInQReleased()));
+                    Core.getServer().queuePacket(() -> Core.getGame().onPacketInQReleased(player, new PacketInQReleased()));
                     break;
 
                 case EJECT_MASS:
-                    Core.getServer().queuePacket(() -> player.onPacketInEjectMass(new PacketInEjectMass()));
+                    Core.getServer().queuePacket(() -> Core.getGame().onPacketInEjectMass(player, new PacketInEjectMass()));
                     break;
 
                 case RESET:
-                    Core.getServer().queuePacket(() -> player.onPacketInReset(new PacketInReset()));
+                    Core.getServer().queuePacket(() -> Core.getGame().onPacketInReset(player, new PacketInReset()));
                     break;
 
                 default:
@@ -125,9 +132,7 @@ public class ServerHandler extends WebSocketServer implements Handler {
     }
     
     @Override
-    public void onMessage(WebSocket ws, String string) { 
-        System.out.println(string);
-    }
+    public void onMessage(WebSocket ws, String string) {}
     
     @Override
     public void onError(WebSocket ws, Exception e) { 

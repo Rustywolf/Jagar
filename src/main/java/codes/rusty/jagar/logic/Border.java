@@ -1,4 +1,4 @@
-package codes.rusty.jagar.game;
+package codes.rusty.jagar.logic;
 
 public final class Border {
 

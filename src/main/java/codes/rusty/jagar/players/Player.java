@@ -1,30 +1,22 @@
 package codes.rusty.jagar.players;
 
-import codes.rusty.jagar.Core;
-import codes.rusty.jagar.net.PacketReceiver;
-import codes.rusty.jagar.net.packets.in.PacketInEjectMass;
-import codes.rusty.jagar.net.packets.in.PacketInMouseMove;
-import codes.rusty.jagar.net.packets.in.PacketInQPressed;
-import codes.rusty.jagar.net.packets.in.PacketInQReleased;
-import codes.rusty.jagar.net.packets.in.PacketInReset;
-import codes.rusty.jagar.net.packets.in.PacketInSetNickname;
-import codes.rusty.jagar.net.packets.in.PacketInSpectate;
-import codes.rusty.jagar.net.packets.in.PacketInSplit;
 import codes.rusty.jagar.net.packets.out.PacketOutAddNode;
 import codes.rusty.jagar.nodes.PlayerNode;
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import org.java_websocket.WebSocket;
 
-public class Player implements PacketReceiver {
+public class Player {
 
     private static final Random RANDOM = new Random();
     
     private final int playerId;
     private final WebSocket socket;
     private final ArrayList<PlayerNode> nodes;
+    private final HashMap<String, Object> data;
 
     private String nickName;
     private Color color;
@@ -36,6 +28,7 @@ public class Player implements PacketReceiver {
         this.playerId = id;
         this.socket = socket;
         this.nodes = new ArrayList<>();
+        this.data = new HashMap<>();
         this.nickName = "An unnamed cell";
         this.color = new Color(RANDOM.nextInt(256), RANDOM.nextInt(256), RANDOM.nextInt(256));
     }
@@ -114,6 +107,34 @@ public class Player implements PacketReceiver {
             }
         }
     }
+    
+    public void setData(String key, Object data) {
+        if (data == null) {
+            this.data.remove(key);
+        } else {
+            this.data.put(key, data);
+        }
+    }
+    
+    public Object getData(String key) {
+        return data.get(key);
+    }
+    
+    public<T> T getData(String key, Class<T> expected) {
+        if (data.containsKey(key)) {
+            return expected.cast(data.get(key));
+        } else {
+            return null;
+        }
+    }
+    
+    public<T> T getOrDefault(String key, T defaultValue) {
+        if (data.containsKey(key)) {
+            return (T) data.get(key);
+        } else {
+            return defaultValue;
+        }
+    }
 
     public void tick() {
         
@@ -121,46 +142,6 @@ public class Player implements PacketReceiver {
 
     public List<PlayerNode> getNodes() {
         return new ArrayList<>(nodes);
-    }
-
-    @Override
-    public void onPacketInSetNickname(PacketInSetNickname packet) {
-        Core.getGame().onPacketInSetNickname(this, packet);
-    }
-
-    @Override
-    public void onPacketInSpectate(PacketInSpectate packet) {
-        Core.getGame().onPacketInSpectate(this, packet);
-    }
-
-    @Override
-    public void onPacketInMouseMove(PacketInMouseMove packet) {
-        Core.getGame().onPacketInMouseMove(this, packet);
-    }
-
-    @Override
-    public void onPacketInSplit(PacketInSplit packet) {
-        Core.getGame().onPacketInSplit(this, packet);
-    }
-
-    @Override
-    public void onPacketInQPressed(PacketInQPressed packet) {
-        Core.getGame().onPacketInQPressed(this, packet);
-    }
-
-    @Override
-    public void onPacketInQReleased(PacketInQReleased packet) {
-        Core.getGame().onPacketInQReleased(this, packet);
-    }
-
-    @Override
-    public void onPacketInEjectMass(PacketInEjectMass packet) {
-        Core.getGame().onPacketInEjectMass(this, packet);
-    }
-
-    @Override
-    public void onPacketInReset(PacketInReset packet) {
-        Core.getGame().onPacketInReset(this, packet);
     }
 
 }

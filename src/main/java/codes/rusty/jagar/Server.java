@@ -1,7 +1,7 @@
 package codes.rusty.jagar;
 
-import codes.rusty.jagar.game.GameHandler;
-import codes.rusty.jagar.game.LifeGameHandler;
+import codes.rusty.jagar.logic.GameHandler;
+import codes.rusty.jagar.logic.games.BlockGameHandler;
 import codes.rusty.jagar.net.ServerHandler;
 import codes.rusty.jagar.nodes.Node;
 import codes.rusty.jagar.nodes.NodeHandler;
@@ -32,7 +32,7 @@ public class Server extends TimerTask implements Handler {
         
         this.nodeHandler = new NodeHandler();
         this.playerHandler = new PlayerHandler();
-        this.gameHandler = new LifeGameHandler();
+        this.gameHandler = new BlockGameHandler();
         
         timer = new Timer();
         queuedPackets = new ConcurrentLinkedQueue<>();

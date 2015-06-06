@@ -1,7 +1,8 @@
-package codes.rusty.jagar.game;
+package codes.rusty.jagar.logic.games;
 
 import codes.rusty.jagar.Core;
-import codes.rusty.jagar.game.GameHandler;
+import codes.rusty.jagar.logic.GameHandler;
+import codes.rusty.jagar.logic.GameHandler;
 import codes.rusty.jagar.net.packets.PacketOut;
 import codes.rusty.jagar.net.packets.in.PacketInEjectMass;
 import codes.rusty.jagar.net.packets.in.PacketInMouseMove;

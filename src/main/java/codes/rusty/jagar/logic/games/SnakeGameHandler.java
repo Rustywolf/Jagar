@@ -1,8 +1,10 @@
-package codes.rusty.jagar.game;
+package codes.rusty.jagar.logic.games;
 
 import codes.rusty.jagar.Core;
+import codes.rusty.jagar.logic.Border;
+import codes.rusty.jagar.logic.GameHandler;
+import codes.rusty.jagar.logic.modules.MouseMoveModule;
 import codes.rusty.jagar.net.packets.PacketOut;
-import codes.rusty.jagar.net.packets.in.PacketInMouseMove;
 import codes.rusty.jagar.net.packets.in.PacketInReset;
 import codes.rusty.jagar.net.packets.out.PacketOutSetBorder;
 import codes.rusty.jagar.net.packets.out.PacketOutUpdateLeaderboardFFA;
@@ -38,6 +40,8 @@ public class SnakeGameHandler extends GameHandler {
     
     @Override
     public void enable() {
+        this.registerModule(new MouseMoveModule());
+        
         this.setBorder(BORDER);
         this.tailNodes = new ArrayList<>();
         this.appleCoords = new ArrayList<>();
@@ -203,12 +207,6 @@ public class SnakeGameHandler extends GameHandler {
     @Override
     public void destroy() {
         
-    }
-    
-    @Override
-    public void onPacketInMouseMove(Player player, PacketInMouseMove packet) {
-        player.setMouseX(packet.getMouseX());
-        player.setMouseY(packet.getMouseY());
     }
 
     @Override

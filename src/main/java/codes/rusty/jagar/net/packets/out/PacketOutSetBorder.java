@@ -1,6 +1,6 @@
 package codes.rusty.jagar.net.packets.out;
 
-import codes.rusty.jagar.game.Border;
+import codes.rusty.jagar.logic.Border;
 import codes.rusty.jagar.net.packets.PacketOut;
 import com.google.common.io.LittleEndianDataOutputStream;
 import java.io.IOException;

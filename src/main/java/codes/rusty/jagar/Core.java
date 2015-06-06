@@ -1,6 +1,6 @@
 package codes.rusty.jagar;
 
-import codes.rusty.jagar.game.GameHandler;
+import codes.rusty.jagar.logic.GameHandler;
 import codes.rusty.jagar.logging.CoreLoggingHandler;
 import codes.rusty.jagar.nodes.NodeHandler;
 import codes.rusty.jagar.players.PlayerHandler;

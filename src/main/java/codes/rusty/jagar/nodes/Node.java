@@ -2,6 +2,7 @@ package codes.rusty.jagar.nodes;
 
 import codes.rusty.jagar.Core;
 import java.awt.Color;
+import java.util.HashMap;
 import java.util.Random;
 
 public abstract class Node {
@@ -21,8 +22,11 @@ public abstract class Node {
     private boolean destroyed = false;
     private int killerId = -1;
     
+    private final HashMap<String, Object> data;
+    
     public Node(int id) {
         this.id = id;
+        this.data = new HashMap<>();
     }
     
     public int getId() {
@@ -111,6 +115,34 @@ public abstract class Node {
 
     public int getKillerId() {
         return killerId;
+    }
+    
+    public void setData(String key, Object data) {
+        if (data == null) {
+            this.data.remove(key);
+        } else {
+            this.data.put(key, data);
+        }
+    }
+    
+    public Object getData(String key) {
+        return data.get(key);
+    }
+    
+    public<T> T getData(String key, Class<T> expected) {
+        if (data.containsKey(key)) {
+            return expected.cast(data.get(key));
+        } else {
+            return null;
+        }
+    }
+    
+    public<T> T getOrDefault(String key, T defaultValue) {
+        if (data.containsKey(key)) {
+            return (T) data.get(key);
+        } else {
+            return defaultValue;
+        }
     }
     
     public void destroy(Node killer) {

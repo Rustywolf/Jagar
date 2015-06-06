@@ -55,7 +55,7 @@ public class NodeHandler implements Handler {
         if (freeIds.isEmpty()) {
             return byId.size() + 1;
         } else {
-            return freeIds.poll();
+            return (freeIds.peek() > byId.size()) ? byId.size() + 1 : freeIds.poll();
         }
     }
     
