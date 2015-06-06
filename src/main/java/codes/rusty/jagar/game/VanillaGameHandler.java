@@ -53,12 +53,7 @@ public class VanillaGameHandler extends GameHandler {
     public void destroy() {
         
     }
-
-    @Override
-    public void onNodeSpawned(Node node) {
-        
-    }
-
+    
     @Override
     public void onPacketInReset(Player player, PacketInReset packet) {
         if (player.getNodes().isEmpty()) {
@@ -107,11 +102,6 @@ public class VanillaGameHandler extends GameHandler {
     public void onPacketInSetNickname(Player player, PacketInSetNickname packet) {
         player.setNickName(packet.getName());
         player.setSpectating(false); // I assume this is how it works?
-    }
-
-    @Override
-    public void setBorder(Border border) {
-        
     }
     
     

@@ -47,9 +47,8 @@ public class NodeHandler implements Handler {
         return node;
     }
     
-    private void addNode(Node node) {
+    public void addNode(Node node) {
         byId.put(node.getId(), node);
-        Core.getGame().onNodeSpawned(node);
     }
     
     private int getNextFreeId() {

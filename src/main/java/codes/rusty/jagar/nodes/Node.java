@@ -21,7 +21,7 @@ public abstract class Node {
     private boolean destroyed = false;
     private int killerId = -1;
     
-    protected Node(int id) {
+    public Node(int id) {
         this.id = id;
     }
     

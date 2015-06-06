@@ -20,19 +20,17 @@ public abstract class GameHandler implements Handler {
     
     private Border border = Border.DEFAULT;
     
-    public void enable() {
-        
-    }
+    public void enable() {}
     
-    public abstract void tickGame();
+    public void tickGame() {}
     
-    public abstract void render(Table<Integer, Integer, Set<Node>> chunks);
+    public void render(Table<Integer, Integer, Set<Node>> chunks) {}
 
-    public Border getBorder() {
+    public final Border getBorder() {
         return border;
     }
     
-    public void setBorder(Border border) {
+    public final void setBorder(Border border) {
         this.border = border;
         Core.getPlayerHandler().sendToAll(new PacketOutSetBorder(border));
     }
@@ -52,7 +50,5 @@ public abstract class GameHandler implements Handler {
     public void onPacketInEjectMass(Player player, PacketInEjectMass packet) {}
 
     public void onPacketInReset(Player player, PacketInReset packet) {}
-    
-    public void onNodeSpawned(Node node) {}
     
 }
